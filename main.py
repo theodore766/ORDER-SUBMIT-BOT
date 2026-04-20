@@ -1,10 +1,10 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message
 from aiogram.filters import CommandStart
 
-from config import BOT_TOKEN, GROUP_ID, MANAGEMENT_GROUP_ID
+from config import BOT_TOKEN, GROUP_ID
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -27,21 +27,6 @@ QUESTIONS = [
     ("shipping_address", "📍 What is the full shipping address?"),
     ("billing_address", "🧾 What is the full billing address?")
 ]
-
-
-def build_keyboard():
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(text="🔄 In Process", callback_data="status:in_process"),
-                InlineKeyboardButton(text="⏳ Waiting", callback_data="status:waiting"),
-            ],
-            [
-                InlineKeyboardButton(text="✅ Done", callback_data="status:done"),
-                InlineKeyboardButton(text="❌ Failed", callback_data="status:failed"),
-            ],
-        ]
-    )
 
 
 @dp.message(CommandStart())
@@ -105,20 +90,10 @@ async def handle_form(message: Message):
     )
 
     await bot.send_message(GROUP_ID, summary_text)
-
-    try:
-        await bot.send_message(
-            MANAGEMENT_GROUP_ID,
-            summary_text,
-            reply_markup=build_keyboard()
-        )
-    except Exception as e:
-        print(f"Erro ao enviar para grupo de gestão: {e}")
-
     await message.answer(
-        "✅ Thank you for the order submission.\n\n"
-        "Joker team will reach you out soon for more details."
-    )
+    "✅ Thank you for the order submission.\n\n"
+    "Joker team will reach you out soon for more details."
+)
 
     del user_data[user_id]
 
